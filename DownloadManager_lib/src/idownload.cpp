@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Bartek Taczała 								   *
- *   b@kontrasty.szczecin.pl   											   *
+ *   Copyright (C) 2008 by Bartek Taczała                                  *
+ *   b@kontrasty.szczecin.pl                                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -94,7 +94,7 @@ unsigned int IDownload::progress() const
 void IDownload::setState(const DownloadState::States& _state, bool triggerEmit)
 {
 
-    LOG(DownloadStateToString( _state ));
+    LOG( DownloadStateToString( _state ) );
 
     switch ( _state )
     {
@@ -198,6 +198,7 @@ void IDownload::removeFromFile( const QString& _post )
 
 void IDownload::renameFile()
 {
+	Q_ASSERT( m_apFile.get() ) ; 
     QString dest = m_apFile->fileName();
     QString destTemp = dest ; //
     int ind = dest.lastIndexOf( Download::TMPSTRING );

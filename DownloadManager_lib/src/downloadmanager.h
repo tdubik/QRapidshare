@@ -152,8 +152,7 @@ class DownloadManager : public QObject
          * Connect QObject signal/slot mechanism with signals from pDownload
          * @param pDownload 
          */
-        void                    connectWith( IDownload *pDownload ) ;
-        void                    disconnectWith( IDownload *pDownload ) ; 
+        void                    connectWith( IDownload *pDownload ) ; 
         /**
          * Return position of download in container which send a signal
          * @param sender - Download that sends the signal. Will be casted to IDownload*
@@ -170,9 +169,6 @@ class DownloadManager : public QObject
         
         void                    decreaseNumberOfCurrentDownloads();
         void                    increaseNumberOfCurrentDownloads();
-        
-        void                    startDownloadAndConnect ( IDownload *pDownload ) ;
-        void                    stopDownloadAndDisconnect(IDownload *pDownload ) ;
     private slots:
         void                    slot_listChanged() ; 
 
@@ -203,15 +199,15 @@ class DownloadManager : public QObject
          * @param total - how big is file. 
          */
         void                    progressInfoAt( int at, const ProgressInfo& _info );
-		/**
-		 * signal downloadAdded() 
-		 * Will emit when some frontend will add some download to queue. 
-		 */
-		void					downloadAdded( int newPosition ) ; 
-		/**
-		 * signal downloadRemoved() 
-		 * Will emit when some frontend will remove download from queue. 
-		 */
-		void					downloadRemoved( int position ) ; 
+        /**
+         * signal downloadAdded() 
+         * Will emit when some frontend will add some download to queue. 
+         */
+        void                    downloadAdded( int newPosition ) ; 
+        /**
+         * signal downloadRemoved() 
+         * Will emit when some frontend will remove download from queue. 
+         */
+        void                    downloadRemoved( int position ) ; 
 };
 #endif // DOWNLOADMANAGER_H

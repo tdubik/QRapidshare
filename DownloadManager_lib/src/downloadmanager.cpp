@@ -70,7 +70,7 @@ const IDownload* DownloadManager::addDownload(const std::string & urlAddress, co
     m_DownloadList.push_back(IDownloadSmartPtr(pDownload));
     update() ; 
     LOG(" emit downloadAdded(" <<m_DownloadList.size()-1<<")");
-	emit downloadAdded(m_DownloadList.size()-1);
+    emit downloadAdded(m_DownloadList.size()-1);
     return pDownload ; 
 };
 void DownloadManager::startDownload(const std::string &urlAddress)
@@ -168,10 +168,10 @@ void DownloadManager::removeDownload(const std::string &urlAddress)
     DownloadListType::iterator it = std::find_if( m_DownloadList.begin(), m_DownloadList.end(), boost::bind(raaa, _1 ) == urlAddress) ; 
     if ( it == m_DownloadList.end() ) 
         return ; 
-	int pos = findPosition(urlAddress) ;
+    int pos = findPosition(urlAddress) ;
     m_DownloadList.erase(it);
     LOG("emit downloadRemoved( "<<pos<<")");
-	emit downloadRemoved( pos );
+    emit downloadRemoved( pos );
 }
 void DownloadManager::removeDownload( int position )
 {
@@ -204,15 +204,13 @@ IDownload* DownloadManager::find(const std::string & urlAddress )
 }
 void DownloadManager::statusChanged(DownloadState::States what)
 {
-    int pos = getPositionWithinSlot( sender() ) ;  
     if ( what == DownloadState::DONE || what == DownloadState::FAILED || what == DownloadState::PAUSED ) 
     {
-        IDownload *pDownload = m_DownloadList.at(pos).get();
-        stopDownloadAndDisconnect(pDownload);
+        //m_DownloadManagerSettings.m_CurrentDownloadingFiles-- ; 
         decreaseNumberOfCurrentDownloads();
         update() ; 
     }
-    
+    int pos = getPositionWithinSlot( sender() ) ;  
     if ( pos !=-1 )
     {
         LOG("emit statusChanged("<<pos<<","<<what<<")");
@@ -244,11 +242,6 @@ void DownloadManager::connectWith(IDownload * pDownload)
 {
     QObject::connect ( pDownload, SIGNAL( statusChanged( DownloadState::States ) ), this,SLOT( statusChanged(DownloadState::States) ) ) ;
     QObject::connect ( pDownload, SIGNAL( progressInfo( const ProgressInfo& ) ), this,SLOT( progressInfo( const ProgressInfo&  ) ) ) ;
-}
-void DownloadManager::disconnectWith(IDownload * pDownload)
-{
-    QObject::disconnect ( pDownload, SIGNAL( statusChanged( DownloadState::States ) ), this,SLOT( statusChanged(DownloadState::States) ) ) ;
-    QObject::disconnect ( pDownload, SIGNAL( progressInfo( const ProgressInfo& ) ), this,SLOT( progressInfo( const ProgressInfo&  ) ) ) ;
 }
 int DownloadManager::findPosition(const std::string & url)
 {
@@ -297,7 +290,8 @@ void DownloadManager::update()
                 continue ; 
             if ( canIDownload() ) 
             {
-                startDownloadAndConnect(pDownload);
+                pDownload->start() ; 
+                //m_DownloadManagerSettings.m_CurrentDownloadingFiles += 1;
                 increaseNumberOfCurrentDownloads();
             }
             counter++;
@@ -318,15 +312,9 @@ void DownloadManager::update()
     }
     
 }
-void DownloadManager::startDownloadAndConnect ( IDownload *pDownload ) {
-    connectWith(pDownload);
-    pDownload->start();
-}
-void DownloadManager::stopDownloadAndDisconnect ( IDownload *pDownload ) {
-    disconnectWith(pDownload);
-}
 
-void DownloadManager::setState(DownloadManagerState state){
+void DownloadManager::setState(DownloadManagerState state)
+{
     m_State = state ; 
     update() ; 
 }
@@ -369,4 +357,3 @@ void DownloadManager::increaseNumberOfCurrentDownloads()
         LOG("Something is wrong");
     
 }
-
